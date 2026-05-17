@@ -1,0 +1,15 @@
+{
+  "short_name": "計件薪資",
+  "name": "員工計件薪資管理系統",
+  "icons": [
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "index.html",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "theme_color": "#1A5276"
+}
