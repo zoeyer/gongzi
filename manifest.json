@@ -4,12 +4,12 @@
   "description": "员工计件工资管理",
   "icons": [
     {
-      "src": "/工资/gongzi/appicon.png",
+      "src": "./appicon.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/工资/gongzi/appicon.png",
+      "src": "./appicon.png",
       "type": "image/png",
       "sizes": "512x512"
     }
