@@ -1,5 +1,5 @@
-/* ======== 计件薪资 - Service Worker ======== */
-const CACHE = 'piecewage-v1';
+/* ======== 计件薪资管理系统 - Service Worker ======== */
+const CACHE = 'piecewage-v2';
 const URLS = [
   './',
   './index.html',

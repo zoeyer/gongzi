@@ -4,17 +4,12 @@
   <meta charset="UTF-8">
   <title>计件薪资</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-  <!-- PWA: 主题色 -->
   <meta name="theme-color" content="#1A5276">
-  <!-- PWA: 安卓添加到桌面全屏 -->
   <meta name="mobile-web-app-capable" content="yes">
-  <!-- PWA: iOS 添加到桌面全屏 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="计件薪资">
-  <!-- PWA: Manifest -->
   <link rel="manifest" href="manifest.json">
-  <!-- PWA: 桌面图标 -->
   <link rel="icon" type="image/png" sizes="192x192" href="./appicon.png">
   <link rel="icon" type="image/png" sizes="512x512" href="./appicon.png">
   <link rel="apple-touch-icon" href="./appicon.png">
@@ -25,6 +20,7 @@
       --danger: #e74c3c;
       --danger-light: #fde8e6;
       --success: #27ae60;
+      --warning: #f39c12;
       --text: #222;
       --text-secondary: #888;
       --border: #e8eaed;
@@ -95,9 +91,13 @@
     .btn:active { opacity: .7; }
     .btn-primary { background: var(--primary); color: #fff; }
     .btn-danger { background: var(--danger); color: #fff; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-warning { background: var(--warning); color: #fff; }
     .btn-outline { background: #fff; color: var(--primary); border: 1.5px solid var(--primary); }
+    .btn-outline-danger { background: #fff; color: var(--danger); border: 1.5px solid var(--danger); }
     .btn-sm { padding: 6px 13px; font-size: .88rem; border-radius: var(--radius-sm); }
     .btn-xs { padding: 4px 9px; font-size: .8rem; border-radius: var(--radius-sm); }
+    .btn-block { width: 100%; }
 
     .input {
       display: block;
@@ -114,6 +114,32 @@
     .input-sm { padding: 7px 9px; font-size: .92rem; width: auto; }
     .input-inline { display: inline-block; width: auto; }
 
+    /* ---------- Checkbox ---------- */
+    .chk-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .chk-wrap input[type="checkbox"] {
+      width: 20px; height: 20px;
+      accent-color: var(--primary);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .select-all-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 10px 14px;
+      margin-bottom: 10px;
+    }
+    .select-all-bar .chk-wrap { flex: 1; }
+
     /* ---------- Home Page ---------- */
     .employee-list { list-style: none; }
     .employee-item {
@@ -129,6 +155,7 @@
       touch-action: manipulation;
     }
     .employee-item:active { background: #f0f2f5; }
+    .employee-item .chk-wrap { margin-right: 4px; }
     .employee-name {
       flex: 1;
       font-size: 1.08rem;
@@ -147,11 +174,12 @@
     }
     .add-row .input { flex: 1; }
     .home-actions {
-      margin-top: 20px;
+      margin-top: 16px;
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
     }
+    .home-actions .btn { flex: 1; min-width: calc(50% - 4px); }
 
     /* ---------- Employee Page ---------- */
     .emp-name-header {
@@ -172,8 +200,8 @@
       margin-bottom: 16px;
     }
     .input-group .input { flex: 1; min-width: 70px; }
-    .input-group .input.price-input { max-width: 100px; }
-    .input-group .input.qty-input { max-width: 90px; }
+    .input-group .input.price-input { max-width: 110px; }
+    .input-group .input.qty-input { max-width: 100px; }
     .input-group .btn { flex-shrink: 0; }
 
     /* ---------- Wage Groups ---------- */
@@ -331,34 +359,77 @@
       padding: 4px 8px;
     }
 
-    /* ---------- History ---------- */
-    .history-item {
-      background: #f8f9fb;
-      border-radius: var(--radius-sm);
-      padding: 12px;
+    /* ---------- History Page ---------- */
+    .history-month-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .history-month-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 10px;
-      border: 1px solid var(--border);
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
     }
-    .history-date {
-      font-size: .85rem;
-      color: var(--text-secondary);
-      margin-bottom: 6px;
-    }
-    .history-total {
+    .history-month-title {
+      font-size: 1.1rem;
       font-weight: 700;
       color: var(--primary);
-      font-size: 1.02rem;
-      margin-bottom: 8px;
     }
-    .history-detail {
-      font-size: .88rem;
+    .history-month-total {
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--danger);
+    }
+    .history-emp-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f2f5;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .history-emp-row:last-child { border-bottom: none; }
+    .history-emp-row:active { background: #f8f9fb; }
+    .history-emp-name {
+      flex: 1;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .history-emp-wage {
+      font-weight: 600;
       color: var(--text);
-      line-height: 1.7;
     }
-    .history-detail .line { padding: 2px 0; }
-    .history-restore {
-      margin-top: 8px;
+    .history-month-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
     }
+
+    /* ---------- History Detail Modal ---------- */
+    .hist-detail-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 70px;
+      gap: 6px;
+      padding: 6px 0;
+      font-size: .92rem;
+      border-bottom: 1px solid #f0f2f5;
+    }
+    .hist-detail-row.header {
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: .82rem;
+    }
+    .hist-detail-row .col { text-align: right; }
+    .hist-detail-row .col:first-child { text-align: left; }
 
     /* ---------- Export Page (Mobile) ---------- */
     .export-page {
@@ -401,7 +472,6 @@
       font-weight: 600;
       color: var(--text-secondary);
       font-size: .82rem;
-      border-bottom: 1.5px solid var(--border);
     }
     .export-row .col { text-align: right; }
     .export-row .col:first-child { text-align: left; }
@@ -434,6 +504,22 @@
       font-size: 1rem;
     }
 
+    /* ---------- Toast ---------- */
+    .toast {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      background: rgba(0,0,0,.78);
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      z-index: 999;
+      pointer-events: none;
+      animation: toastIn .25s ease;
+    }
+    @keyframes toastIn { from { opacity:0; transform:translate(-50%,-50%) scale(.9); } to { opacity:1; transform:translate(-50%,-50%) scale(1); } }
+
     /* ---------- Responsive ---------- */
     @media (min-width: 600px) {
       #app { border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
@@ -446,7 +532,8 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 /* ======================== Data ======================== */
-const STORAGE_KEY = 'piecewage_v3';
+const STORAGE_KEY = 'piecewage_v4';
+const ARCHIVE_KEY = 'piecewage_archives_v1';
 
 function loadData() {
   try {
@@ -459,7 +546,19 @@ function saveData() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(employeeList));
 }
 
+function loadArchives() {
+  try {
+    var d = JSON.parse(localStorage.getItem(ARCHIVE_KEY));
+    return Array.isArray(d) ? d : [];
+  } catch(e) { return []; }
+}
+
+function saveArchives() {
+  localStorage.setItem(ARCHIVE_KEY, JSON.stringify(archives));
+}
+
 let employeeList = loadData();
+let archives = loadArchives();
 
 function genId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -481,6 +580,11 @@ function nowStr() {
   return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
 }
 
+function currentMonth() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2, '0');
+}
+
 function calcGroupTotal(g) {
   return sum(g.quantities) * g.price;
 }
@@ -488,7 +592,11 @@ function calcGroupTotal(g) {
 function calcTotal(groups) {
   var t = 0;
   for (var i = 0; i < groups.length; i++) t += calcGroupTotal(groups[i]);
-  return fmt(t);
+  return t;
+}
+
+function calcTotalFmt(groups) {
+  return fmt(calcTotal(groups));
 }
 
 function isMobile() {
@@ -499,6 +607,18 @@ function safeName(name) {
   return String(name || '员工').replace(/[/\\?%*:|"<>]/g, '_').trim() || '员工';
 }
 
+/* ======================== Toast ======================== */
+function showToast(msg, duration) {
+  duration = duration || 1800;
+  var old = document.querySelector('.toast');
+  if (old) old.parentNode.removeChild(old);
+  var el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, duration);
+}
+
 /* ======================== DOM Helpers ======================== */
 var $app = document.getElementById('app');
 
@@ -506,68 +626,117 @@ function clearApp() { $app.innerHTML = ''; }
 
 function qs(sel, ctx) { return (ctx || $app).querySelector(sel); }
 
-/* ======================== Render ======================== */
+function ce(tag, className) {
+  var el = document.createElement(tag);
+  if (className) el.className = className;
+  return el;
+}
 
-/* ---------- Home Page ---------- */
+/* ======================== Navigation ======================== */
 function removeBottomBar() {
   var old = document.getElementById('emp-bottom');
   if (old) old.parentNode.removeChild(old);
 }
 
+function getSelectedEmpIds() {
+  var checked = document.querySelectorAll('.emp-chk:checked');
+  var ids = [];
+  for (var i = 0; i < checked.length; i++) ids.push(checked[i].value);
+  return ids;
+}
+
+function getEmpsByIds(ids) {
+  return employeeList.filter(function(e) { return ids.indexOf(e.id) !== -1; });
+}
+
+/* ======================== Render: Home (Cover) ======================== */
 function renderHome() {
   clearApp();
   removeBottomBar();
   var page = ce('div', 'page');
-  page.innerHTML = '<div class="page-title">员工列表</div>';
+  page.innerHTML = '<div class="page-title">📋 员工列表 <span style="font-size:.75rem;color:var(--text-secondary);font-weight:400;margin-left:auto">' + currentMonth() + '</span></div>';
 
-  // Add row
   var addRow = ce('div', 'add-row');
   var addInp = ce('input', 'input');
   addInp.type = 'text';
   addInp.placeholder = '输入姓名';
   addInp.id = 'add-name-input';
   addInp.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addBtn.click();
-    }
+    if (e.key === 'Enter') { e.preventDefault(); addBtn.click(); }
   });
   addRow.appendChild(addInp);
-
   var addBtn = ce('button', 'btn btn-primary');
   addBtn.textContent = '添加';
   addBtn.onclick = function() {
     var name = addInp.value.trim();
     if (!name) return;
-    employeeList.push({ id: genId(), name: name, wageGroups: [], history: [] });
+    employeeList.push({ id: genId(), name: name, wageGroups: [] });
     saveData();
     renderHome();
   };
   addRow.appendChild(addBtn);
   page.appendChild(addRow);
 
-  // List
   if (employeeList.length === 0) {
     var emptyEl = ce('div', 'empty-state');
     emptyEl.textContent = '暂无员工，输入姓名后点击「添加」';
     page.appendChild(emptyEl);
   } else {
+    // Select all bar
+    var selBar = ce('div', 'select-all-bar');
+    var allChkWrap = ce('label', 'chk-wrap');
+    var allChk = document.createElement('input');
+    allChk.type = 'checkbox';
+    allChk.id = 'select-all-emp';
+    allChk.onchange = function() {
+      var chks = document.querySelectorAll('.emp-chk');
+      for (var i = 0; i < chks.length; i++) chks[i].checked = allChk.checked;
+      updateSelectedCount();
+    };
+    allChkWrap.appendChild(allChk);
+    allChkWrap.appendChild(document.createTextNode('全选'));
+    selBar.appendChild(allChkWrap);
+
+    var selectedCount = ce('span');
+    selectedCount.id = 'selected-count';
+    selectedCount.style.cssText = 'font-size:.82rem;color:var(--text-secondary);';
+    selectedCount.textContent = '已选 0 人';
+    selBar.appendChild(selectedCount);
+    page.appendChild(selBar);
+
+    // List
     var ul = ce('ul', 'employee-list');
     employeeList.forEach(function(emp, idx) {
       var li = ce('li', 'employee-item');
+      var chkWrap = ce('label', 'chk-wrap');
+      var chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.className = 'emp-chk';
+      chk.value = emp.id;
+      chk.onchange = function() {
+        updateSelectedCount();
+        var allCk = document.getElementById('select-all-emp');
+        if (allCk) {
+          var allChecked = true;
+          var chks = document.querySelectorAll('.emp-chk');
+          for (var i = 0; i < chks.length; i++) { if (!chks[i].checked) { allChecked = false; break; } }
+          allCk.checked = allChecked;
+        }
+      };
+      chkWrap.appendChild(chk);
+      li.appendChild(chkWrap);
+
       var infoDiv = ce('div');
       infoDiv.style.flex = '1';
       var nameSpan = ce('div', 'employee-name');
       nameSpan.textContent = emp.name;
       infoDiv.appendChild(nameSpan);
 
-      var totalWage = calcTotal(emp.wageGroups);
       if (emp.wageGroups.length > 0) {
         var info = ce('div', 'employee-info');
-        info.textContent = '当前总工资：￥' + totalWage;
+        info.textContent = '当前总工资：￥' + calcTotalFmt(emp.wageGroups);
         infoDiv.appendChild(info);
       }
-
       li.appendChild(infoDiv);
 
       var delBtn = ce('button', 'btn btn-danger btn-xs');
@@ -582,32 +751,49 @@ function renderHome() {
       };
       li.appendChild(delBtn);
 
-      li.onclick = function() { renderEmployee(emp); };
+      li.onclick = function(e) {
+        if (e.target.tagName === 'INPUT') return;
+        renderEmployee(emp);
+      };
       ul.appendChild(li);
     });
     page.appendChild(ul);
-  }
 
-  // Bottom actions
-  var actions = ce('div', 'home-actions');
-  var exportBtn = ce('button', 'btn btn-outline');
-  exportBtn.textContent = '导出所有人工资';
-  exportBtn.onclick = function() {
-    if (isMobile()) renderMobileExportAll();
-    else exportExcelAll();
-  };
-  actions.appendChild(exportBtn);
-  page.appendChild(actions);
+    // Actions
+    var actions = ce('div', 'home-actions');
+    var archiveBtn = ce('button', 'btn btn-warning');
+    archiveBtn.textContent = '📦 归档';
+    archiveBtn.onclick = function() { doArchiveSelected(); };
+    actions.appendChild(archiveBtn);
+
+    var exportBtn = ce('button', 'btn btn-primary');
+    exportBtn.textContent = '📤 导出';
+    exportBtn.onclick = function() { doExportSelected(); };
+    actions.appendChild(exportBtn);
+
+    var historyBtn = ce('button', 'btn btn-outline');
+    historyBtn.textContent = '📜 历史';
+    historyBtn.onclick = function() { renderHistory(); };
+    actions.appendChild(historyBtn);
+
+    page.appendChild(actions);
+  }
 
   $app.appendChild(page);
 }
 
-/* ---------- Employee Wage Page ---------- */
+function updateSelectedCount() {
+  var el = document.getElementById('selected-count');
+  if (!el) return;
+  var count = getSelectedEmpIds().length;
+  el.textContent = '已选 ' + count + ' 人';
+}
+
+/* ======================== Render: Employee Page ======================== */
 function renderEmployee(emp) {
   clearApp();
   var page = ce('div', 'page');
 
-  // Header with back
   var title = ce('div', 'page-title');
   var back = ce('button', 'back-btn');
   back.textContent = '\u2190';
@@ -618,7 +804,6 @@ function renderEmployee(emp) {
   title.appendChild(nameSpan);
   page.appendChild(title);
 
-  // Input group
   var inputGroup = ce('div', 'input-group');
   var priceInp = ce('input', 'input price-input');
   priceInp.type = 'text';
@@ -639,7 +824,6 @@ function renderEmployee(emp) {
     var q = Number(qtyInp.value.trim());
     if (!(p > 0) || !(q > 0)) return;
 
-    // Find existing group with same price
     var found = null;
     for (var i = 0; i < emp.wageGroups.length; i++) {
       if (emp.wageGroups[i].price === p) { found = emp.wageGroups[i]; break; }
@@ -654,13 +838,11 @@ function renderEmployee(emp) {
     qtyInp.focus();
     renderWageGroups(emp, page);
     updateEmployeeBottom(emp);
+    showToast('已保存：' + p + '元 × ' + q);
   }
 
   qtyInp.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && qtyInp.value.trim()) {
-      e.preventDefault();
-      doSave();
-    }
+    if (e.key === 'Enter' && qtyInp.value.trim()) { e.preventDefault(); doSave(); }
   });
 
   var saveBtn = ce('button', 'btn btn-primary');
@@ -669,14 +851,11 @@ function renderEmployee(emp) {
   inputGroup.appendChild(saveBtn);
   page.appendChild(inputGroup);
 
-  // Wage groups area
   var groupsArea = ce('div');
   groupsArea.id = 'groups-area';
   page.appendChild(groupsArea);
 
   $app.appendChild(page);
-
-  // 修复: 在 DOM 插入后再渲染，确保 document.getElementById 能找到元素
   renderWageGroups(emp, page);
   updateEmployeeBottom(emp);
 }
@@ -693,25 +872,19 @@ function renderWageGroups(emp, page) {
 
   emp.wageGroups.forEach(function(g, gIdx) {
     var box = ce('div', 'wage-group');
-
-    // Header
     var header = ce('div', 'wage-group-header');
     var priceSpan = ce('span', 'wage-price');
     priceSpan.textContent = g.price;
     header.appendChild(priceSpan);
-
     var subSpan = ce('span', 'wage-subtotal');
     subSpan.textContent = fmt(calcGroupTotal(g));
     header.appendChild(subSpan);
     box.appendChild(header);
 
-    // Quantity blocks
     var qtyList = ce('div', 'qty-list');
     g.quantities.forEach(function(q, qIdx) {
       var block = ce('div', 'qty-block');
       block.textContent = q;
-
-      // Delete button
       var del = ce('button', 'qty-del');
       del.textContent = '\u00D7';
       del.onclick = function(e) {
@@ -722,16 +895,10 @@ function renderWageGroups(emp, page) {
         updateEmployeeBottom(emp);
       };
       block.appendChild(del);
-
-      // Click to edit
-      block.onclick = function() {
-        startQtyEdit(block, emp, g, qIdx, page);
-      };
-
+      block.onclick = function() { startQtyEdit(block, emp, g, qIdx, page); };
       qtyList.appendChild(block);
     });
     box.appendChild(qtyList);
-
     area.appendChild(box);
   });
 }
@@ -762,7 +929,6 @@ function startQtyEdit(block, emp, g, qIdx, page) {
     if (e.key === 'Escape') { block.style.display = ''; if (input.parentNode) input.parentNode.removeChild(input); }
   };
   input.onblur = finish;
-
   block.parentNode.insertBefore(input, block.nextSibling);
   setTimeout(function() { input.focus(); input.select(); }, 50);
 }
@@ -775,58 +941,221 @@ function updateEmployeeBottom(emp) {
   bar.id = 'emp-bottom';
 
   var total = ce('span', 'bottom-total');
-  total.textContent = '\uFFE5' + calcTotal(emp.wageGroups);
+  total.textContent = '\uFFE5' + calcTotalFmt(emp.wageGroups);
   bar.appendChild(total);
 
   var actions = ce('div', 'bottom-actions');
 
   var historyBtn = ce('button', 'btn btn-outline btn-sm');
-  historyBtn.textContent = '历史';
-  historyBtn.onclick = function() { showHistory(emp); };
+  historyBtn.textContent = '📜 历史';
+  historyBtn.onclick = function() { showEmpHistory(emp); };
   actions.appendChild(historyBtn);
 
   var exportBtn = ce('button', 'btn btn-outline btn-sm');
-  exportBtn.textContent = '导出';
+  exportBtn.textContent = '📤 导出';
   exportBtn.onclick = function() {
-    if (isMobile()) renderMobileExportSingle(emp);
-    else exportExcelSingle(emp);
+    if (isMobile()) renderMobileExport([emp], emp.name + ' - 工资明细');
+    else exportExcel([emp], safeName(emp.name) + '-工资.xlsx');
   };
   actions.appendChild(exportBtn);
 
-  var archiveBtn = ce('button', 'btn btn-primary btn-sm');
-  archiveBtn.textContent = '归档';
-  archiveBtn.onclick = function() { doArchive(emp); };
+  var archiveBtn = ce('button', 'btn btn-warning btn-sm');
+  archiveBtn.textContent = '📦 归档';
+  archiveBtn.onclick = function() { doArchive([emp]); };
   actions.appendChild(archiveBtn);
 
   bar.appendChild(actions);
   document.body.appendChild(bar);
 }
 
-/* ---------- Archive ---------- */
-function doArchive(emp) {
-  if (emp.wageGroups.length === 0) { alert('没有工资数据可归档'); return; }
-  if (!confirm('确认归档？\n当前工资将保存到历史记录并清空本月数据。')) return;
-
-  var snap = emp.wageGroups.map(function(g) {
-    return { id: g.id, price: g.price, quantities: g.quantities.slice() };
-  });
-  emp.history.push({
-    id: genId(),
-    date: nowStr(),
-    groups: snap
-  });
-  emp.wageGroups = [];
-  saveData();
-  renderEmployee(emp);
+/* ======================== Archive ======================== */
+function doArchiveSelected() {
+  var ids = getSelectedEmpIds();
+  if (ids.length === 0) { alert('请先选择要归档的员工'); return; }
+  var emps = getEmpsByIds(ids);
+  if (confirm('确认归档选中的 ' + emps.length + ' 位员工？\n当前工资将保存到历史记录并清空本月数据。')) {
+    doArchive(emps);
+  }
 }
 
-/* ---------- History ---------- */
-function showHistory(emp) {
+function doArchive(emps) {
+  var filtered = emps.filter(function(e) { return e.wageGroups.length > 0; });
+  if (filtered.length === 0) { showToast('所选员工暂无工资数据'); return; }
+
+  var snapEmps = filtered.map(function(e) {
+    return {
+      id: e.id,
+      name: e.name,
+      groups: e.wageGroups.map(function(g) {
+        return { id: g.id, price: g.price, quantities: g.quantities.slice() };
+      })
+    };
+  });
+
+  var month = currentMonth();
+  var existing = null;
+  for (var i = 0; i < archives.length; i++) {
+    if (archives[i].month === month) { existing = archives[i]; break; }
+  }
+
+  if (existing) {
+    snapEmps.forEach(function(se) {
+      var found = false;
+      for (var j = 0; j < existing.employees.length; j++) {
+        if (existing.employees[j].id === se.id) {
+          se.groups.forEach(function(sg) {
+            var gFound = false;
+            for (var k = 0; k < existing.employees[j].groups.length; k++) {
+              if (existing.employees[j].groups[k].price === sg.price) {
+                existing.employees[j].groups[k].quantities = existing.employees[j].groups[k].quantities.concat(sg.quantities);
+                gFound = true; break;
+              }
+            }
+            if (!gFound) existing.employees[j].groups.push(sg);
+          });
+          found = true; return;
+        }
+      }
+      if (!found) existing.employees.push(se);
+    });
+    existing.date = nowStr();
+  } else {
+    archives.push({
+      id: genId(),
+      month: month,
+      date: nowStr(),
+      employees: snapEmps
+    });
+  }
+
+  filtered.forEach(function(e) { e.wageGroups = []; });
+  saveData();
+  saveArchives();
+  showToast('已归档 ' + filtered.length + ' 位员工');
+  renderHome();
+}
+
+/* ======================== Render: History Page ======================== */
+function renderHistory() {
+  clearApp();
+  removeBottomBar();
+  var page = ce('div', 'page');
+  page.innerHTML = '<div class="page-title"><button class="back-btn" onclick="renderHome()">\u2190</button>📜 历史记录</div>';
+
+  if (archives.length === 0) {
+    page.innerHTML += '<div class="empty-state">暂无历史记录</div>';
+    $app.appendChild(page);
+    return;
+  }
+
+  archives.sort(function(a, b) { return b.month.localeCompare(a.month); });
+
+  archives.forEach(function(arch, archIdx) {
+    var card = ce('div', 'history-month-card');
+
+    var header = ce('div', 'history-month-header');
+    var monthTitle = ce('div', 'history-month-title');
+    monthTitle.textContent = arch.month + ' 月';
+    header.appendChild(monthTitle);
+
+    var monthTotal = 0;
+    arch.employees.forEach(function(ae) { monthTotal += calcTotal(ae.groups); });
+    var totalSpan = ce('div', 'history-month-total');
+    totalSpan.textContent = '合计：￥' + fmt(monthTotal);
+    header.appendChild(totalSpan);
+    card.appendChild(header);
+
+    arch.employees.forEach(function(ae) {
+      var row = ce('div', 'history-emp-row');
+      var chkWrap = ce('label', 'chk-wrap');
+      var chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.className = 'hist-emp-chk';
+      chk.value = arch.id + '|' + ae.id;
+      chkWrap.appendChild(chk);
+      row.appendChild(chkWrap);
+
+      var nameDiv = ce('div', 'history-emp-name');
+      nameDiv.textContent = ae.name;
+      row.appendChild(nameDiv);
+
+      var wageDiv = ce('div', 'history-emp-wage');
+      wageDiv.textContent = '￥' + calcTotalFmt(ae.groups);
+      row.appendChild(wageDiv);
+
+      row.onclick = function(e) {
+        if (e.target.tagName === 'INPUT') return;
+        showHistoryDetail(ae);
+      };
+      card.appendChild(row);
+    });
+
+    var monthActions = ce('div', 'history-month-actions');
+
+    var selectAllWrap = ce('label', 'chk-wrap');
+    var selAll = document.createElement('input');
+    selAll.type = 'checkbox';
+    selAll.className = 'hist-month-all';
+    selAll.dataset.archId = arch.id;
+    selAll.onchange = function() {
+      var chks = card.querySelectorAll('.hist-emp-chk');
+      for (var i = 0; i < chks.length; i++) {
+        if (chks[i].value.startsWith(arch.id + '|')) chks[i].checked = selAll.checked;
+      }
+    };
+    selectAllWrap.appendChild(selAll);
+    selectAllWrap.appendChild(document.createTextNode('全选'));
+    monthActions.appendChild(selectAllWrap);
+
+    var restoreBtn = ce('button', 'btn btn-success btn-xs');
+    restoreBtn.textContent = '↩ 恢复';
+    restoreBtn.onclick = function() { restoreFromArchive(arch, archIdx); };
+    monthActions.appendChild(restoreBtn);
+
+    var exportBtn = ce('button', 'btn btn-primary btn-xs');
+    exportBtn.textContent = '📤 导出';
+    exportBtn.onclick = function() { exportArchiveSelected(arch); };
+    monthActions.appendChild(exportBtn);
+
+    var clearBtn = ce('button', 'btn btn-outline-danger btn-xs');
+    clearBtn.textContent = '🗑 清除';
+    clearBtn.onclick = function() { clearArchive(arch, archIdx); };
+    monthActions.appendChild(clearBtn);
+
+    card.appendChild(monthActions);
+    page.appendChild(card);
+  });
+
+  // Global actions
+  var globalActions = ce('div', 'home-actions');
+  var exportAllBtn = ce('button', 'btn btn-primary');
+  exportAllBtn.textContent = '📤 导出全部历史';
+  exportAllBtn.onclick = function() { exportAllArchive(); };
+  globalActions.appendChild(exportAllBtn);
+
+  var clearAllBtn = ce('button', 'btn btn-danger');
+  clearAllBtn.textContent = '🗑 清除全部历史';
+  clearAllBtn.onclick = function() {
+    if (confirm('确认清除全部历史记录？不可恢复！')) {
+      archives = [];
+      saveArchives();
+      renderHistory();
+      showToast('已清除全部历史记录');
+    }
+  };
+  globalActions.appendChild(clearAllBtn);
+  page.appendChild(globalActions);
+
+  $app.appendChild(page);
+}
+
+/* ======================== History Detail ======================== */
+function showHistoryDetail(ae) {
   var mask = ce('div', 'modal-mask');
   var modal = ce('div', 'modal');
 
   var title = ce('div', 'modal-title');
-  title.textContent = emp.name + ' - 历史记录';
+  title.textContent = ae.name + ' - 详细记录';
   modal.appendChild(title);
 
   var closeBtn = ce('button', 'modal-close');
@@ -834,53 +1163,166 @@ function showHistory(emp) {
   closeBtn.onclick = function() { document.body.removeChild(mask); };
   modal.appendChild(closeBtn);
 
-  if (!emp.history || emp.history.length === 0) {
-    modal.innerHTML += '<div style="color:#aaa;padding:20px 0;text-align:center;">暂无历史记录</div>';
+  if (!ae.groups || ae.groups.length === 0) {
+    modal.innerHTML += '<div style="color:#aaa;padding:20px 0;text-align:center;">暂无详细数据</div>';
   } else {
-    // Show newest first
-    for (var i = emp.history.length - 1; i >= 0; i--) {
-      var h = emp.history[i];
-      var item = ce('div', 'history-item');
+    var header = ce('div', 'hist-detail-row header');
+    header.innerHTML = '<div class="col">单价</div><div class="col">数量</div><div class="col">小计</div>';
+    modal.appendChild(header);
 
-      var dateDiv = ce('div', 'history-date');
-      dateDiv.textContent = h.date;
-      item.appendChild(dateDiv);
+    var empTotal = 0;
+    ae.groups.forEach(function(g) {
+      var row = ce('div', 'hist-detail-row');
+      var qStr = g.quantities.join(' + ');
+      var sub = calcGroupTotal(g);
+      empTotal += sub;
+      row.innerHTML = '<div class="col">' + g.price + ' 元</div><div class="col" style="text-align:center;">' + qStr + '</div><div class="col">￥' + fmt(sub) + '</div>';
+      modal.appendChild(row);
+    });
 
-      var totalDiv = ce('div', 'history-total');
-      totalDiv.textContent = '\uFFE5' + calcTotal(h.groups);
-      item.appendChild(totalDiv);
+    var totalLine = ce('div', 'hist-detail-row');
+    totalLine.style.cssText = 'font-weight:700;color:var(--primary);border-bottom:none;padding-top:10px;';
+    totalLine.innerHTML = '<div class="col">合计</div><div class="col"></div><div class="col">￥' + fmt(empTotal) + '</div>';
+    modal.appendChild(totalLine);
+  }
 
-      var detail = ce('div', 'history-detail');
-      h.groups.forEach(function(g) {
-        var line = ce('div', 'line');
-        var qStr = g.quantities.join(' + ');
-        line.textContent = g.price + '元：' + qStr + '  小计：\uFFE5' + fmt(calcGroupTotal(g));
-        detail.appendChild(line);
-      });
-      item.appendChild(detail);
+  mask.appendChild(modal);
+  document.body.appendChild(mask);
+  mask.onclick = function(e) { if (e.target === mask) document.body.removeChild(mask); };
+}
 
-      var restoreBtn = ce('button', 'btn btn-outline btn-xs history-restore');
-      restoreBtn.textContent = '恢复归档';
-      restoreBtn.onclick = function() {
-        if (!confirm('恢复后将替换当前工资数据，确定？')) return;
-
-        // Remove archive from history and restore groups
-        var idx = emp.history.indexOf(h);
-        if (idx !== -1) {
-          emp.history.splice(idx, 1);
-          emp.wageGroups = h.groups.map(function(g) {
-            return { id: genId(), price: g.price, quantities: g.quantities.slice() };
-          });
-          saveData();
-          document.body.removeChild(mask);
-          renderEmployee(emp);
-        }
-      };
-      item.appendChild(restoreBtn);
-
-      modal.appendChild(item);
+/* ======================== History: Restore ======================== */
+function restoreFromArchive(arch, archIdx) {
+  var chks = document.querySelectorAll('.hist-emp-chk:checked');
+  var selected = [];
+  for (var i = 0; i < chks.length; i++) {
+    var parts = chks[i].value.split('|');
+    if (parts[0] === arch.id) {
+      var empData = null;
+      for (var j = 0; j < arch.employees.length; j++) {
+        if (arch.employees[j].id === parts[1]) { empData = arch.employees[j]; break; }
+      }
+      if (empData) selected.push(empData);
     }
   }
+
+  if (selected.length === 0) { alert('请选择要恢复的员工'); return; }
+  if (!confirm('确认恢复选中的 ' + selected.length + ' 位员工历史数据到本月？')) return;
+
+  selected.forEach(function(se) {
+    var curEmp = null;
+    for (var i = 0; i < employeeList.length; i++) {
+      if (employeeList[i].id === se.id) { curEmp = employeeList[i]; break; }
+    }
+
+    if (!curEmp) {
+      curEmp = { id: se.id, name: se.name, wageGroups: [] };
+      employeeList.push(curEmp);
+    }
+
+    se.groups.forEach(function(sg) {
+      var found = false;
+      for (var k = 0; k < curEmp.wageGroups.length; k++) {
+        if (curEmp.wageGroups[k].price === sg.price) {
+          curEmp.wageGroups[k].quantities = curEmp.wageGroups[k].quantities.concat(sg.quantities);
+          found = true; break;
+        }
+      }
+      if (!found) {
+        curEmp.wageGroups.push({ id: genId(), price: sg.price, quantities: sg.quantities.slice() });
+      }
+    });
+
+    for (var i = 0; i < arch.employees.length; i++) {
+      if (arch.employees[i].id === se.id) { arch.employees.splice(i, 1); break; }
+    }
+  });
+
+  archives = archives.filter(function(a) { return a.employees.length > 0; });
+  saveData();
+  saveArchives();
+  showToast('已恢复 ' + selected.length + ' 位员工数据');
+  renderHistory();
+}
+
+/* ======================== History: Clear ======================== */
+function clearArchive(arch, archIdx) {
+  var chks = document.querySelectorAll('.hist-emp-chk:checked');
+  var selectedIds = [];
+  for (var i = 0; i < chks.length; i++) {
+    var parts = chks[i].value.split('|');
+    if (parts[0] === arch.id) selectedIds.push(parts[1]);
+  }
+
+  if (selectedIds.length === 0) {
+    if (!confirm('未选择员工，确认清除整个 ' + arch.month + ' 月记录？')) return;
+    archives.splice(archIdx, 1);
+    saveArchives();
+    renderHistory();
+    showToast('已清除 ' + arch.month + ' 月记录');
+    return;
+  }
+
+  if (!confirm('确认清除选中的 ' + selectedIds.length + ' 位员工记录？')) return;
+
+  arch.employees = arch.employees.filter(function(e) { return selectedIds.indexOf(e.id) === -1; });
+  if (arch.employees.length === 0) { archives.splice(archIdx, 1); }
+  saveArchives();
+  renderHistory();
+  showToast('已清除选中记录');
+}
+
+/* ======================== Employee History ======================== */
+function showEmpHistory(emp) {
+  var empArchives = [];
+  archives.forEach(function(arch) {
+    arch.employees.forEach(function(ae) {
+      if (ae.id === emp.id || ae.name === emp.name) {
+        empArchives.push({ month: arch.month, date: arch.date, data: ae });
+      }
+    });
+  });
+
+  if (empArchives.length === 0) { showToast('该员工暂无归档历史'); return; }
+
+  var mask = ce('div', 'modal-mask');
+  var modal = ce('div', 'modal');
+
+  var title = ce('div', 'modal-title');
+  title.textContent = emp.name + ' - 归档历史';
+  modal.appendChild(title);
+
+  var closeBtn = ce('button', 'modal-close');
+  closeBtn.textContent = '\u00D7';
+  closeBtn.onclick = function() { document.body.removeChild(mask); };
+  modal.appendChild(closeBtn);
+
+  empArchives.sort(function(a, b) { return b.month.localeCompare(a.month); });
+  empArchives.forEach(function(ea) {
+    var item = ce('div');
+    item.style.cssText = 'background:#f8f9fb;border-radius:6px;padding:12px;margin-bottom:10px;border:1px solid var(--border);';
+    var dateDiv = ce('div');
+    dateDiv.style.cssText = 'font-size:.85rem;color:var(--text-secondary);margin-bottom:6px;';
+    dateDiv.textContent = ea.month + ' 月 (' + ea.date + ')';
+    item.appendChild(dateDiv);
+
+    var totalDiv = ce('div');
+    totalDiv.style.cssText = 'font-weight:700;color:var(--primary);font-size:1.02rem;margin-bottom:8px;';
+    totalDiv.textContent = '总工资：￥' + calcTotalFmt(ea.data.groups);
+    item.appendChild(totalDiv);
+
+    var detail = ce('div');
+    detail.style.cssText = 'font-size:.88rem;color:var(--text);line-height:1.7;';
+    ea.data.groups.forEach(function(g) {
+      var line = ce('div');
+      line.style.cssText = 'padding:2px 0;';
+      var qStr = g.quantities.join(' + ');
+      line.textContent = g.price + '元：' + qStr + '  小计：￥' + fmt(calcGroupTotal(g));
+      detail.appendChild(line);
+    });
+    item.appendChild(detail);
+    modal.appendChild(item);
+  });
 
   mask.appendChild(modal);
   document.body.appendChild(mask);
@@ -889,15 +1331,60 @@ function showHistory(emp) {
 
 /* ======================== Export ======================== */
 
-/* ---------- 手机端导出（同一单价合并显示） ---------- */
-function renderMobileExportSingle(emp) {
-  renderMobileExport([emp], emp.name + ' - 工资明细');
+function doExportSelected() {
+  var ids = getSelectedEmpIds();
+  if (ids.length === 0) { alert('请先选择要导出的员工'); return; }
+  var emps = getEmpsByIds(ids);
+  if (emps.length === 0) return;
+
+  if (isMobile()) {
+    renderMobileExport(emps, '选中员工工资明细');
+  } else {
+    exportExcel(emps, '工资导出.xlsx');
+  }
 }
 
-function renderMobileExportAll() {
-  renderMobileExport(employeeList, '全部员工工资明细');
+function exportArchiveSelected(arch) {
+  var chks = document.querySelectorAll('.hist-emp-chk:checked');
+  var selected = [];
+  for (var i = 0; i < chks.length; i++) {
+    var parts = chks[i].value.split('|');
+    if (parts[0] === arch.id) {
+      for (var j = 0; j < arch.employees.length; j++) {
+        if (arch.employees[j].id === parts[1]) {
+          selected.push(arch.employees[j]); break;
+        }
+      }
+    }
+  }
+
+  if (selected.length === 0) { selected = arch.employees; }
+  if (selected.length === 0) return;
+
+  if (isMobile()) {
+    renderMobileExportFromArchive(selected, arch.month);
+  } else {
+    exportExcelFromArchive(selected, arch.month + '月历史工资.xlsx');
+  }
 }
 
+function exportAllArchive() {
+  var all = [];
+  archives.forEach(function(arch) {
+    arch.employees.forEach(function(ae) {
+      all.push({ month: arch.month, name: ae.name, groups: ae.groups });
+    });
+  });
+  if (all.length === 0) { alert('暂无历史数据'); return; }
+
+  if (isMobile()) {
+    renderMobileExportAllArchive(all);
+  } else {
+    exportExcelAllArchive(all, '全部历史工资.xlsx');
+  }
+}
+
+/* ---------- Mobile Export: Current Data ---------- */
 function renderMobileExport(emps, titleText) {
   clearApp();
   var page = ce('div', 'export-page');
@@ -914,12 +1401,10 @@ function renderMobileExport(emps, titleText) {
 
   emps.forEach(function(emp) {
     var sec = ce('div', 'export-section');
-
     var nameDiv = ce('div', 'export-emp-name');
     nameDiv.textContent = emp.name;
     sec.appendChild(nameDiv);
 
-    // Header row
     var header = ce('div', 'export-row header');
     header.innerHTML = '<div class="col">单价</div><div class="col">数量</div><div class="col">小计</div>';
     sec.appendChild(header);
@@ -927,52 +1412,158 @@ function renderMobileExport(emps, titleText) {
     var empTotal = 0;
     var groups = emp.wageGroups || [];
     if (groups.length === 0) {
-      var emptyHint = ce('div');
-      emptyHint.style.cssText = 'color:#aaa;padding:8px 0;font-size:.88rem;';
-      emptyHint.textContent = '暂无数据';
-      sec.appendChild(emptyHint);
+      var hint = ce('div');
+      hint.style.cssText = 'color:#aaa;padding:8px 0;font-size:.88rem;';
+      hint.textContent = '暂无数据';
+      sec.appendChild(hint);
     } else {
       groups.forEach(function(g) {
         var row = ce('div', 'export-row');
         var qStr = g.quantities.join(' + ');
         var sub = calcGroupTotal(g);
         empTotal += sub;
-        row.innerHTML = '<div class="col">' + g.price + '</div><div class="col" style="text-align:center;">' + qStr + '</div><div class="col">\uFFE5' + fmt(sub) + '</div>';
+        row.innerHTML = '<div class="col">' + g.price + '</div><div class="col" style="text-align:center;">' + qStr + '</div><div class="col">￥' + fmt(sub) + '</div>';
         sec.appendChild(row);
       });
     }
 
     var empTotalDiv = ce('div', 'export-total');
-    empTotalDiv.textContent = emp.name + ' 本月总工资：\uFFE5' + fmt(empTotal);
+    empTotalDiv.textContent = emp.name + ' 总工资：￥' + fmt(empTotal);
     sec.appendChild(empTotalDiv);
-
     page.appendChild(sec);
     grandTotal += empTotal;
   });
 
-  // 改进: 全员导出时始终显示总工资
-  var gtDiv = ce('div', emps.length > 1 ? 'export-grand-total' : 'export-total');
   if (emps.length > 1) {
-    gtDiv.textContent = '全体员工总工资：\uFFE5' + fmt(grandTotal);
+    var gtDiv = ce('div', 'export-grand-total');
+    gtDiv.textContent = '全体员工总工资：￥' + fmt(grandTotal);
+    page.appendChild(gtDiv);
   }
-  page.appendChild(gtDiv);
 
-  // Close button
   var closeBtn = ce('button', 'btn btn-outline');
   closeBtn.textContent = '返回';
-  closeBtn.style.display = 'block';
-  closeBtn.style.margin = '20px auto 0';
-  closeBtn.onclick = function() {
-    if (emps.length === 1 && emps[0]) renderEmployee(emps[0]);
-    else renderHome();
-  };
+  closeBtn.style.cssText = 'display:block;margin:20px auto 0;';
+  closeBtn.onclick = function() { renderHome(); };
   page.appendChild(closeBtn);
 
   $app.appendChild(page);
 }
 
-/* ---------- Excel 导出（同一单价合并显示 + 累计小计） ---------- */
+/* ---------- Mobile Export: From Archive ---------- */
+function renderMobileExportFromArchive(emps, month) {
+  clearApp();
+  var page = ce('div', 'export-page');
 
+  var title = ce('div', 'export-title');
+  title.textContent = month + ' 月历史工资';
+  page.appendChild(title);
+
+  var timeDiv = ce('div', 'export-time');
+  timeDiv.textContent = '导出时间：' + nowStr();
+  page.appendChild(timeDiv);
+
+  var grandTotal = 0;
+
+  emps.forEach(function(emp) {
+    var sec = ce('div', 'export-section');
+    var nameDiv = ce('div', 'export-emp-name');
+    nameDiv.textContent = emp.name;
+    sec.appendChild(nameDiv);
+
+    var header = ce('div', 'export-row header');
+    header.innerHTML = '<div class="col">单价</div><div class="col">数量</div><div class="col">小计</div>';
+    sec.appendChild(header);
+
+    var empTotal = 0;
+    var groups = emp.groups || [];
+    groups.forEach(function(g) {
+      var row = ce('div', 'export-row');
+      var qStr = g.quantities.join(' + ');
+      var sub = calcGroupTotal(g);
+      empTotal += sub;
+      row.innerHTML = '<div class="col">' + g.price + '</div><div class="col" style="text-align:center;">' + qStr + '</div><div class="col">￥' + fmt(sub) + '</div>';
+      sec.appendChild(row);
+    });
+
+    var empTotalDiv = ce('div', 'export-total');
+    empTotalDiv.textContent = emp.name + ' 总工资：￥' + fmt(empTotal);
+    sec.appendChild(empTotalDiv);
+    page.appendChild(sec);
+    grandTotal += empTotal;
+  });
+
+  if (emps.length > 1) {
+    var gtDiv = ce('div', 'export-grand-total');
+    gtDiv.textContent = month + ' 月总工资：￥' + fmt(grandTotal);
+    page.appendChild(gtDiv);
+  }
+
+  var closeBtn = ce('button', 'btn btn-outline');
+  closeBtn.textContent = '返回';
+  closeBtn.style.cssText = 'display:block;margin:20px auto 0;';
+  closeBtn.onclick = renderHistory;
+  page.appendChild(closeBtn);
+
+  $app.appendChild(page);
+}
+
+/* ---------- Mobile Export: All Archives ---------- */
+function renderMobileExportAllArchive(all) {
+  clearApp();
+  var page = ce('div', 'export-page');
+
+  var title = ce('div', 'export-title');
+  title.textContent = '全部历史工资明细';
+  page.appendChild(title);
+
+  var timeDiv = ce('div', 'export-time');
+  timeDiv.textContent = '导出时间：' + nowStr();
+  page.appendChild(timeDiv);
+
+  var grandTotal = 0;
+
+  all.forEach(function(item) {
+    var sec = ce('div', 'export-section');
+    var nameDiv = ce('div', 'export-emp-name');
+    nameDiv.textContent = '[' + item.month + '] ' + item.name;
+    sec.appendChild(nameDiv);
+
+    var header = ce('div', 'export-row header');
+    header.innerHTML = '<div class="col">单价</div><div class="col">数量</div><div class="col">小计</div>';
+    sec.appendChild(header);
+
+    var empTotal = 0;
+    var groups = item.groups || [];
+    groups.forEach(function(g) {
+      var row = ce('div', 'export-row');
+      var qStr = g.quantities.join(' + ');
+      var sub = calcGroupTotal(g);
+      empTotal += sub;
+      row.innerHTML = '<div class="col">' + g.price + '</div><div class="col" style="text-align:center;">' + qStr + '</div><div class="col">￥' + fmt(sub) + '</div>';
+      sec.appendChild(row);
+    });
+
+    var empTotalDiv = ce('div', 'export-total');
+    empTotalDiv.textContent = item.name + ' 总工资：￥' + fmt(empTotal);
+    sec.appendChild(empTotalDiv);
+    page.appendChild(sec);
+    grandTotal += empTotal;
+  });
+
+  var gtDiv = ce('div', 'export-grand-total');
+  gtDiv.textContent = '历史总工资：￥' + fmt(grandTotal);
+  page.appendChild(gtDiv);
+
+  var closeBtn = ce('button', 'btn btn-outline');
+  closeBtn.textContent = '返回';
+  closeBtn.style.cssText = 'display:block;margin:20px auto 0;';
+  closeBtn.onclick = renderHistory;
+  page.appendChild(closeBtn);
+
+  $app.appendChild(page);
+}
+
+/* ---------- Excel Export ---------- */
 function buildExportAoa(emps) {
   var headers = ['导出时间', '员工姓名', '单价', '数量', '小计'];
   var rows = [];
@@ -994,54 +1585,71 @@ function buildExportAoa(emps) {
       empTotal += sub;
       rows.push([exportTime, emp.name, g.price, qStr, sub]);
     });
-    // Total row for this employee
     rows.push([exportTime, emp.name + ' 小计', '', '', Math.round(empTotal * 100) / 100]);
     rows.push([]);
     allTotal += empTotal;
   });
 
-  // Grand total
   rows.push(['', '全体员工总工资', '', '', Math.round(allTotal * 100) / 100]);
-
   return { aoa: [headers].concat(rows), headerRows: [0], totalRow: rows.length - 1 };
+}
+
+function buildExportFromArchiveAoa(emps) {
+  var headers = ['月份', '员工姓名', '单价', '数量', '小计'];
+  var rows = [];
+  var allTotal = 0;
+
+  emps.forEach(function(emp) {
+    var groups = emp.groups || [];
+    if (groups.length === 0) return;
+    var empTotal = 0;
+    groups.forEach(function(g) {
+      var qStr = g.quantities.join(' + ');
+      var sub = calcGroupTotal(g);
+      empTotal += sub;
+      rows.push([emp.month || '', emp.name, g.price, qStr, sub]);
+    });
+    rows.push(['', emp.name + ' 小计', '', '', Math.round(empTotal * 100) / 100]);
+    rows.push([]);
+    allTotal += empTotal;
+  });
+
+  rows.push(['', '总合计', '', '', Math.round(allTotal * 100) / 100]);
+  return { aoa: [headers].concat(rows), headerRows: [0] };
 }
 
 function downloadExcel(spec, filename) {
   if (typeof XLSX === 'undefined') { alert('Excel 组件未加载，请刷新重试。'); return; }
   var ws = XLSX.utils.aoa_to_sheet(spec.aoa);
-  // Set column widths
-  ws['!cols'] = [
-    { wch: 18 }, { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 12 }
-  ];
-  // Freeze header
+  ws['!cols'] = [{ wch: 18 }, { wch: 12 }, { wch: 10 }, { wch: 16 }, { wch: 12 }];
   ws['!views'] = [{ state: 'frozen', ySplit: 1 }];
   var wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, '工资');
   XLSX.writeFile(wb, filename, { compression: true });
 }
 
-function exportExcelSingle(emp) {
-  var spec = buildExportAoa([emp]);
-  downloadExcel(spec, safeName(emp.name) + '-工资.xlsx');
+function exportExcel(emps, filename) {
+  if (emps.length === 0) return;
+  var spec = buildExportAoa(emps);
+  downloadExcel(spec, filename);
 }
 
-function exportExcelAll() {
-  if (employeeList.length === 0) { alert('暂无员工数据'); return; }
-  var spec = buildExportAoa(employeeList);
-  downloadExcel(spec, '全部员工工资.xlsx');
+function exportExcelFromArchive(emps, filename) {
+  if (emps.length === 0) return;
+  var spec = buildExportFromArchiveAoa(emps.map(function(e) { return { month: '', name: e.name, groups: e.groups }; }));
+  downloadExcel(spec, filename);
 }
 
-/* ======================== Utility ======================== */
-function ce(tag, className) {
-  var el = document.createElement(tag);
-  if (className) el.className = className;
-  return el;
+function exportExcelAllArchive(all, filename) {
+  if (all.length === 0) return;
+  var spec = buildExportFromArchiveAoa(all);
+  downloadExcel(spec, filename);
 }
 
 /* ======================== Init ======================== */
 renderHome();
 
-/* ======== 注册 Service Worker (PWA 离线支持) ======== */
+/* ======== Service Worker ======== */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
 }
