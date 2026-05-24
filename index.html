@@ -99,6 +99,18 @@
     .btn-xs { padding: 4px 9px; font-size: .8rem; border-radius: var(--radius-sm); }
     .btn-block { width: 100%; }
 
+    /* ---------- Mode Bar ---------- */
+    .mode-bar {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 8px 12px; margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .mode-bar .btn-xs { font-size:.75rem; padding:4px 8px; flex-shrink:0; }
+    .mode-bar .dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:3px; }
+    .mode-bar .dot.green { background:var(--success); }
+    .mode-bar .dot.gray { background:#ccc; }
+    .mode-bar .dot.red { background:var(--danger); }
+
     .input {
       display: block;
       width: 100%;
@@ -530,6 +542,7 @@
 <div id="app"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<!-- CloudBase SDK removed -->
 <script>
 /* ======================== Data ======================== */
 const STORAGE_KEY = 'piecewage_v4';
@@ -608,6 +621,8 @@ function safeName(name) {
 }
 
 /* ======================== Toast ======================== */
+
+/* ======================== Toast ======================== */
 function showToast(msg, duration) {
   duration = duration || 1800;
   var old = document.querySelector('.toast');
@@ -656,6 +671,14 @@ function renderHome() {
   var page = ce('div', 'page');
   page.innerHTML = '<div class="page-title">📋 员工列表 <span style="font-size:.75rem;color:var(--text-secondary);font-weight:400;margin-left:auto">' + currentMonth() + '</span></div>';
 
+  // Mode bar
+  var modeBar = ce('div', 'mode-bar');
+  modeBar.innerHTML =
+    '<span style="font-size:.82rem;color:var(--text-secondary);">'+
+      '<span class="dot gray"></span>本地模式'+
+    '</span>';
+  page.appendChild(modeBar);
+
   var addRow = ce('div', 'add-row');
   var addInp = ce('input', 'input');
   addInp.type = 'text';
@@ -670,7 +693,8 @@ function renderHome() {
   addBtn.onclick = function() {
     var name = addInp.value.trim();
     if (!name) return;
-    employeeList.push({ id: genId(), name: name, wageGroups: [] });
+    var emp = { id: genId(), name: name, wageGroups: [] };
+    employeeList.push(emp);
     saveData();
     renderHome();
   };
@@ -831,7 +855,8 @@ function renderEmployee(emp) {
     if (found) {
       found.quantities.push(q);
     } else {
-      emp.wageGroups.push({ id: genId(), price: p, quantities: [q] });
+      var ng = { id: genId(), price: p, quantities: [q] };
+      emp.wageGroups.push(ng);
     }
     saveData();
     qtyInp.value = '';
@@ -1229,7 +1254,8 @@ function restoreFromArchive(arch, archIdx) {
         }
       }
       if (!found) {
-        curEmp.wageGroups.push({ id: genId(), price: sg.price, quantities: sg.quantities.slice() });
+        var restored = { id: genId(), price: sg.price, quantities: sg.quantities.slice() };
+        curEmp.wageGroups.push(restored);
       }
     });
 
@@ -1266,7 +1292,9 @@ function clearArchive(arch, archIdx) {
   if (!confirm('确认清除选中的 ' + selectedIds.length + ' 位员工记录？')) return;
 
   arch.employees = arch.employees.filter(function(e) { return selectedIds.indexOf(e.id) === -1; });
-  if (arch.employees.length === 0) { archives.splice(archIdx, 1); }
+  if (arch.employees.length === 0) {
+    archives.splice(archIdx, 1);
+  }
   saveArchives();
   renderHistory();
   showToast('已清除选中记录');
