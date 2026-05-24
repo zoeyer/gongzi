@@ -128,18 +128,6 @@
       cursor: pointer;
       flex-shrink: 0;
     }
-    .select-all-bar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 10px 14px;
-      margin-bottom: 10px;
-    }
-    .select-all-bar .chk-wrap { flex: 1; }
-
     /* ---------- Home Page ---------- */
     .employee-list { list-style: none; }
     .employee-item {
@@ -686,28 +674,6 @@ function renderHome() {
     emptyEl.textContent = '暂无员工，输入姓名后点击「添加」';
     page.appendChild(emptyEl);
   } else {
-    // Select all bar
-    var selBar = ce('div', 'select-all-bar');
-    var allChkWrap = ce('label', 'chk-wrap');
-    var allChk = document.createElement('input');
-    allChk.type = 'checkbox';
-    allChk.id = 'select-all-emp';
-    allChk.onchange = function() {
-      var chks = document.querySelectorAll('.emp-chk');
-      for (var i = 0; i < chks.length; i++) chks[i].checked = allChk.checked;
-      updateSelectedCount();
-    };
-    allChkWrap.appendChild(allChk);
-    allChkWrap.appendChild(document.createTextNode('全选'));
-    selBar.appendChild(allChkWrap);
-
-    var selectedCount = ce('span');
-    selectedCount.id = 'selected-count';
-    selectedCount.style.cssText = 'font-size:.82rem;color:var(--text-secondary);';
-    selectedCount.textContent = '已选 0 人';
-    selBar.appendChild(selectedCount);
-    page.appendChild(selBar);
-
     // List
     var ul = ce('ul', 'employee-list');
     employeeList.forEach(function(emp, idx) {
@@ -717,16 +683,7 @@ function renderHome() {
       chk.type = 'checkbox';
       chk.className = 'emp-chk';
       chk.value = emp.id;
-      chk.onchange = function() {
-        updateSelectedCount();
-        var allCk = document.getElementById('select-all-emp');
-        if (allCk) {
-          var allChecked = true;
-          var chks = document.querySelectorAll('.emp-chk');
-          for (var i = 0; i < chks.length; i++) { if (!chks[i].checked) { allChecked = false; break; } }
-          allCk.checked = allChecked;
-        }
-      };
+      chk.onchange = function() {};
       chkWrap.appendChild(chk);
       li.appendChild(chkWrap);
 
@@ -784,13 +741,6 @@ function renderHome() {
   }
 
   $app.appendChild(page);
-}
-
-function updateSelectedCount() {
-  var el = document.getElementById('selected-count');
-  if (!el) return;
-  var count = getSelectedEmpIds().length;
-  el.textContent = '已选 ' + count + ' 人';
 }
 
 /* ======================== Render: Employee Page ======================== */
