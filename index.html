@@ -737,15 +737,10 @@ function renderHome() {
     historyBtn.onclick = function() { renderHistory(); };
     actions.appendChild(historyBtn);
 
-    var importBtn = ce('button', 'btn btn-outline');
-    importBtn.textContent = '📥 导入备份';
-    importBtn.onclick = function() { importBackup(); };
-    actions.appendChild(importBtn);
-
-    var exportBtn2 = ce('button', 'btn btn-success');
-    exportBtn2.textContent = '💾 导出备份';
-    exportBtn2.onclick = function() { exportBackup(); };
-    actions.appendChild(exportBtn2);
+    var shareBtn = ce('button', 'btn btn-success');
+    shareBtn.textContent = '🔗 生成分享链接';
+    shareBtn.onclick = function() { genShareLink(); };
+    actions.appendChild(shareBtn);
 
     page.appendChild(actions);
   }
@@ -1614,61 +1609,120 @@ function exportExcelAllArchive(all, filename) {
   downloadExcel(spec, filename);
 }
 
-/* ======================== 备份导出 / 导入 ======================== */
-function exportBackup() {
+/* ======================== 生成分享链接 ======================== */
+function genShareLink() {
   var data = {
     piecewage_v4: localStorage.getItem('piecewage_v4'),
     piecewage_archives_v1: localStorage.getItem('piecewage_archives_v1')
   };
-  var json = JSON.stringify(data, null, 2);
-  var d = new Date();
-  var pad = function(n) { return String(n).padStart(2, '0'); };
-  var dateStr = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
-  var filename = 'backup-工资-' + dateStr + '.json';
-  var blob = new Blob([json], { type: 'application/json' });
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast('备份已导出');
+  var encoded = btoa(encodeURIComponent(JSON.stringify(data)));
+  var url = location.href.split('#')[0] + '#data=' + encoded;
+
+  var mask = ce('div', 'modal-mask');
+  var modal = ce('div', 'modal');
+  modal.style.cssText = 'max-width:90vw;word-break:break-all;';
+
+  var title = ce('div', 'modal-title');
+  title.textContent = '🔗 分享链接';
+  modal.appendChild(title);
+
+  var closeBtn = ce('button', 'modal-close');
+  closeBtn.textContent = '\u00D7';
+  closeBtn.onclick = function() { document.body.removeChild(mask); };
+  modal.appendChild(closeBtn);
+
+  var linkBox = ce('div');
+  linkBox.style.cssText = 'background:#f5f7fa;border-radius:6px;padding:10px;font-size:.82rem;color:#333;margin-bottom:12px;line-height:1.5;overflow-wrap:break-word;';
+  linkBox.textContent = url;
+  modal.appendChild(linkBox);
+
+  var copyBtn = ce('button', 'btn btn-primary btn-block');
+  copyBtn.textContent = '📋 复制链接';
+  copyBtn.onclick = function() {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(function(){
+        showToast('✅ 链接已复制');
+        document.body.removeChild(mask);
+      }).catch(function(){
+        prompt('请手动复制:', url);
+      });
+    } else {
+      prompt('请手动复制:', url);
+    }
+  };
+  modal.appendChild(copyBtn);
+
+  mask.appendChild(modal);
+  document.body.appendChild(mask);
+  mask.onclick = function(e) { if (e.target === mask) document.body.removeChild(mask); };
 }
 
-function importBackup() {
-  if (!confirm('导入后将覆盖当前数据，确认继续？')) return;
-  var input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json';
-  input.onchange = function(e) {
-    var file = e.target.files[0];
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-      try {
-        var data = JSON.parse(ev.target.result);
-        if (data.piecewage_v4 !== undefined) {
-          localStorage.setItem('piecewage_v4', data.piecewage_v4);
+/* ======================== 合并分享数据 ======================== */
+function mergeShareData() {
+  var m = location.hash.match(/^#data=(.+)/);
+  if (!m) return;
+  try {
+    var data = JSON.parse(decodeURIComponent(atob(m[1])));
+    if (!data || !data.piecewage_v4) return;
+
+    // 合并员工列表
+    var incomingEmps = JSON.parse(data.piecewage_v4);
+    var incomingArchs = data.piecewage_archives_v1 ? JSON.parse(data.piecewage_archives_v1) : [];
+
+    if (Array.isArray(incomingEmps)) {
+      incomingEmps.forEach(function(ie) {
+        var found = false;
+        for (var i = 0; i < employeeList.length; i++) {
+          if (employeeList[i].id === ie.id) {
+            // 合并 wageGroups
+            if (Array.isArray(ie.wageGroups)) {
+              ie.wageGroups.forEach(function(ig) {
+                var gFound = false;
+                for (var j = 0; j < employeeList[i].wageGroups.length; j++) {
+                  if (employeeList[i].wageGroups[j].price === ig.price) {
+                    employeeList[i].wageGroups[j].quantities = employeeList[i].wageGroups[j].quantities.concat(ig.quantities);
+                    gFound = true; break;
+                  }
+                }
+                if (!gFound) employeeList[i].wageGroups.push(JSON.parse(JSON.stringify(ig)));
+              });
+            }
+            found = true; break;
+          }
         }
-        if (data.piecewage_archives_v1 !== undefined) {
-          localStorage.setItem('piecewage_archives_v1', data.piecewage_archives_v1);
+        if (!found) {
+          employeeList.push(JSON.parse(JSON.stringify(ie)));
         }
-        employeeList = loadData();
-        archives = loadArchives();
-        renderHome();
-        showToast('备份恢复成功');
-      } catch(err) {
-        showToast('备份文件格式错误');
-      }
-    };
-    reader.readAsText(file);
-  };
-  input.click();
+      });
+      saveData();
+    }
+
+    // 合并归档
+    if (Array.isArray(incomingArchs)) {
+      incomingArchs.forEach(function(ia) {
+        var found = false;
+        for (var i = 0; i < archives.length; i++) {
+          if (archives[i].id === ia.id) {
+            found = true; break;
+          }
+        }
+        if (!found) archives.push(JSON.parse(JSON.stringify(ia)));
+      });
+      saveArchives();
+    }
+
+    // 清除 hash
+    history.replaceState(null, '', location.pathname + location.search);
+    showToast('数据合并成功');
+  } catch(e) {
+    // 解码失败则静默忽略
+  }
 }
 
 /* ======================== Init ======================== */
+employeeList = loadData();
+archives = loadArchives();
+mergeShareData();
 renderHome();
 
 /* ======== Service Worker ======== */
