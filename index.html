@@ -729,19 +729,23 @@ function renderHome() {
   try { var ed = JSON.parse(localStorage.getItem(STORAGE_KEY_EXTRA)); if (Array.isArray(ed) && ed.length > 0) hasExtra = true; } catch(e) {}
   if (!hasExtra) { try { var ea = JSON.parse(localStorage.getItem(ARCHIVE_KEY_EXTRA)); if (Array.isArray(ea) && ea.length > 0) hasExtra = true; } catch(e) {} }
 
-  var listSwitcher = ce('div');
-  listSwitcher.style.cssText = 'display:flex;gap:8px;margin-bottom:10px;';
-  var mainBtn = ce('button', currentListIdx === 0 ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm');
-  mainBtn.textContent = '📋 主列表';
-  mainBtn.onclick = function() { if (currentListIdx !== 0) switchList(0); };
-  listSwitcher.appendChild(mainBtn);
-  var extraBtn = ce('button', currentListIdx === 1 ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm');
-  extraBtn.textContent = '📋 导入列表';
-  extraBtn.onclick = function() { if (currentListIdx !== 1) switchList(1); };
-  listSwitcher.appendChild(extraBtn);
-  if (hasExtra || currentListIdx === 1) page.appendChild(listSwitcher);
+  if (hasExtra || currentListIdx === 1) {
+    var listSwitcher = ce('div');
+    listSwitcher.style.cssText = 'display:flex;gap:8px;margin-bottom:10px;';
+    var mainBtn = ce('button', currentListIdx === 0 ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm');
+    mainBtn.textContent = '📋 主列表';
+    mainBtn.onclick = function() { if (currentListIdx !== 0) switchList(0); };
+    listSwitcher.appendChild(mainBtn);
+    var extraBtn = ce('button', currentListIdx === 1 ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm');
+    extraBtn.textContent = '📋 导入列表';
+    extraBtn.onclick = function() { if (currentListIdx !== 1) switchList(1); };
+    listSwitcher.appendChild(extraBtn);
+    page.appendChild(listSwitcher);
+  }
 
-  page.innerHTML += '<div class="page-title">📋 员工列表 <span style="font-size:.75rem;color:var(--text-secondary);font-weight:400;margin-left:auto">' + currentMonth() + '</span></div>';
+  var titleDiv = ce('div', 'page-title');
+  titleDiv.innerHTML = '📋 员工列表 <span style="font-size:.75rem;color:var(--text-secondary);font-weight:400;margin-left:auto">' + currentMonth() + '</span>';
+  page.appendChild(titleDiv);
 
   var addRow = ce('div', 'add-row');
   var addInp = ce('input', 'input');
