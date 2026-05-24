@@ -1,11 +1,11 @@
 /* ======== 计件薪资管理系统 - Service Worker ======== */
-const CACHE = 'piecewage-v2';
+const CACHE = 'piecewage-v3';
 const URLS = [
   './',
   './index.html',
   './manifest.json',
   './appicon.png',
-  'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'
+  'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js'
 ];
 
 self.addEventListener('install', function(e) {
