@@ -518,6 +518,7 @@
 <div id="app"></div>
 
 <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://unpkg.com/lz-string@1.5.0/libs/lz-string.min.js"></script>
 <!-- CloudBase SDK removed -->
 <script>
 /* ======================== Data ======================== */
@@ -737,15 +738,10 @@ function renderHome() {
     historyBtn.onclick = function() { renderHistory(); };
     actions.appendChild(historyBtn);
 
-    var importBtn = ce('button', 'btn btn-outline');
-    importBtn.textContent = '📥 导入备份';
-    importBtn.onclick = function() { importBackup(); };
-    actions.appendChild(importBtn);
-
-    var exportBtn2 = ce('button', 'btn btn-success');
-    exportBtn2.textContent = '💾 导出备份';
-    exportBtn2.onclick = function() { exportBackup(); };
-    actions.appendChild(exportBtn2);
+    var shareBtn = ce('button', 'btn btn-success');
+    shareBtn.textContent = '🔗 生成分享链接';
+    shareBtn.onclick = function() { generateShareLink(); };
+    actions.appendChild(shareBtn);
 
     page.appendChild(actions);
   }
@@ -1614,59 +1610,117 @@ function exportExcelAllArchive(all, filename) {
   downloadExcel(spec, filename);
 }
 
-/* ======================== 备份导出 / 导入 ======================== */
-function exportBackup() {
+/* ======================== 分享链接 ======================== */
+function generateShareLink() {
   var data = {
-    piecewage_v4: localStorage.getItem('piecewage_v4'),
-    piecewage_archives_v1: localStorage.getItem('piecewage_archives_v1')
+    piecewage_v4: employeeList,
+    piecewage_archives_v1: archives
   };
-  var json = JSON.stringify(data, null, 2);
-  var d = new Date();
-  var pad = function(n) { return String(n).padStart(2, '0'); };
-  var dateStr = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
-  var filename = 'backup-工资-' + dateStr + '.json';
-  var blob = new Blob([json], { type: 'application/json' });
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast('备份已导出');
+  var json = JSON.stringify(data);
+  var compressed = LZString.compressToEncodedURIComponent(json);
+  var url = location.href.split('#')[0] + '#data=' + compressed;
+
+  var mask = ce('div', 'modal-mask');
+  var modal = ce('div', 'modal');
+  var title = ce('div', 'modal-title');
+  title.textContent = '🔗 分享链接';
+  modal.appendChild(title);
+  var closeBtn = ce('button', 'modal-close');
+  closeBtn.textContent = '\u00D7';
+  closeBtn.onclick = function() { document.body.removeChild(mask); };
+  modal.appendChild(closeBtn);
+  var textarea = document.createElement('textarea');
+  textarea.readOnly = true;
+  textarea.value = url;
+  textarea.style.cssText = 'width:100%;height:80px;font-size:.85rem;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);resize:none;outline:none;box-sizing:border-box;';
+  modal.appendChild(textarea);
+  var copyBtn = ce('button', 'btn btn-primary btn-block');
+  copyBtn.textContent = '📋 复制链接';
+  copyBtn.style.marginTop = '12px';
+  copyBtn.onclick = function() {
+    textarea.select();
+    navigator.clipboard.writeText(url).then(function() {
+      showToast('已复制链接');
+    }).catch(function() {
+      document.execCommand('copy');
+      showToast('已复制链接');
+    });
+  };
+  modal.appendChild(copyBtn);
+  mask.appendChild(modal);
+  document.body.appendChild(mask);
+  mask.onclick = function(e) { if (e.target === mask) document.body.removeChild(mask); };
 }
 
-function importBackup() {
-  if (!confirm('导入后将覆盖当前数据，确认继续？')) return;
-  var input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json';
-  input.onchange = function(e) {
-    var file = e.target.files[0];
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-      try {
-        var data = JSON.parse(ev.target.result);
-        if (data.piecewage_v4 !== undefined) {
-          localStorage.setItem('piecewage_v4', data.piecewage_v4);
+/* ======================== 检查分享链接数据 ======================== */
+(function() {
+  if (location.hash.indexOf('#data=') === 0) {
+    try {
+      var encoded = location.hash.replace('#data=', '');
+      var json = LZString.decompressFromEncodedURIComponent(encoded);
+      if (!json) return;
+      var data = JSON.parse(json);
+      var importedEmps = data.piecewage_v4 || [];
+      var importedArchives = data.piecewage_archives_v1 || [];
+
+      importedEmps.forEach(function(ie) {
+        var found = false;
+        for (var i = 0; i < employeeList.length; i++) {
+          if (employeeList[i].id === ie.id) {
+            ie.wageGroups.forEach(function(ig) {
+              var gFound = false;
+              for (var j = 0; j < employeeList[i].wageGroups.length; j++) {
+                if (employeeList[i].wageGroups[j].price === ig.price) {
+                  employeeList[i].wageGroups[j].quantities = employeeList[i].wageGroups[j].quantities.concat(ig.quantities);
+                  gFound = true; return;
+                }
+              }
+              if (!gFound) employeeList[i].wageGroups.push(ig);
+            });
+            found = true; return;
+          }
         }
-        if (data.piecewage_archives_v1 !== undefined) {
-          localStorage.setItem('piecewage_archives_v1', data.piecewage_archives_v1);
+        if (!found) employeeList.push(ie);
+      });
+
+      importedArchives.forEach(function(ia) {
+        var aFound = false;
+        for (var i = 0; i < archives.length; i++) {
+          if (archives[i].id === ia.id) {
+            ia.employees.forEach(function(ie) {
+              var eFound = false;
+              for (var j = 0; j < archives[i].employees.length; j++) {
+                if (archives[i].employees[j].id === ie.id) {
+                  ie.groups.forEach(function(ig) {
+                    var gFound = false;
+                    for (var k = 0; k < archives[i].employees[j].groups.length; k++) {
+                      if (archives[i].employees[j].groups[k].price === ig.price) {
+                        archives[i].employees[j].groups[k].quantities = archives[i].employees[j].groups[k].quantities.concat(ig.quantities);
+                        gFound = true; return;
+                      }
+                    }
+                    if (!gFound) archives[i].employees[j].groups.push(ig);
+                  });
+                  eFound = true; return;
+                }
+              }
+              if (!eFound) archives[i].employees.push(ie);
+            });
+            aFound = true; return;
+          }
         }
-        employeeList = loadData();
-        archives = loadArchives();
-        renderHome();
-        showToast('备份恢复成功');
-      } catch(err) {
-        showToast('备份文件格式错误');
-      }
-    };
-    reader.readAsText(file);
-  };
-  input.click();
-}
+        if (!aFound) archives.push(ia);
+      });
+
+      saveData();
+      saveArchives();
+      location.hash = '';
+      showToast('数据合并成功');
+    } catch(e) {
+      // ignore parse errors
+    }
+  }
+})();
 
 /* ======================== Init ======================== */
 renderHome();
