@@ -99,18 +99,6 @@
     .btn-xs { padding: 4px 9px; font-size: .8rem; border-radius: var(--radius-sm); }
     .btn-block { width: 100%; }
 
-    /* ---------- Mode Bar ---------- */
-    .mode-bar {
-      display: flex; align-items: center; gap: 6px;
-      background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
-      padding: 8px 12px; margin-bottom: 14px; flex-wrap: wrap;
-    }
-    .mode-bar .btn-xs { font-size:.75rem; padding:4px 8px; flex-shrink:0; }
-    .mode-bar .dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:3px; }
-    .mode-bar .dot.green { background:var(--success); }
-    .mode-bar .dot.gray { background:#ccc; }
-    .mode-bar .dot.red { background:var(--danger); }
-
     .input {
       display: block;
       width: 100%;
@@ -670,14 +658,6 @@ function renderHome() {
   removeBottomBar();
   var page = ce('div', 'page');
   page.innerHTML = '<div class="page-title">📋 员工列表 <span style="font-size:.75rem;color:var(--text-secondary);font-weight:400;margin-left:auto">' + currentMonth() + '</span></div>';
-
-  // Mode bar
-  var modeBar = ce('div', 'mode-bar');
-  modeBar.innerHTML =
-    '<span style="font-size:.82rem;color:var(--text-secondary);">'+
-      '<span class="dot gray"></span>本地模式'+
-    '</span>';
-  page.appendChild(modeBar);
 
   var addRow = ce('div', 'add-row');
   var addInp = ce('input', 'input');
